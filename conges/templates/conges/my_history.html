@@ -1,0 +1,59 @@
+{% extends "conges/base.html" %}
+
+{% block title %}Mon historique{% endblock %}
+
+{% block content %}
+  <div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-md">
+
+    <!-- Haut de page -->
+    <div class="flex justify-between items-center mb-4">
+      <a href="{% url 'submit_leave' %}" class="btn btn-success">➕ Nouvelle demande</a>
+    </div>
+
+    <!-- Titre -->
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Mon historique</h2>
+
+    <!-- Erreur -->
+    {% if error %}
+      <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    <!-- Tableau -->
+    {% if records %}
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <thead class="table-light">
+            <tr>
+              <th>Date dépôt</th>
+              <th>Période</th>
+              <th>Durée</th>
+              <th>Décision</th>
+              <th>Confiance</th>
+              <th>Chat</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in records %}
+              <tr>
+                <td>{{ r.created_at }}</td>
+                <td>{{ r.start_date }} → {{ r.end_date }}</td>
+                <td>{{ r.duration_days }}</td>
+                <td>{{ r.accepted|yesno:"ACCEPTÉ,REFUSÉ" }}</td>
+                <td>{{ r.confidence }}</td>
+                <td>
+                  {% if not r.accepted %}
+                    <a href="{% url 'chat_leave' r.id %}" class="btn btn-outline-secondary btn-sm">💬</a>
+                  {% else %}
+                    —
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="text-muted">Aucune demande trouvée pour le moment.</p>
+    {% endif %}
+  </div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "conges/base.html" %}
+
+{% block title %}Demande de congé{% endblock %}
+
+{% block content %}
+  <div class="max-w-xl mx-auto bg-white p-6 rounded-lg shadow-md">
+
+    <!-- Bouton retour -->
+    <div class="mb-4">
+      <a href="{% url 'my_history' %}" class="text-sm text-pistache hover:underline">← Retour à l'historique</a>
+    </div>
+
+    <!-- Titre -->
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Demande de congé</h2>
+
+    <!-- Erreur -->
+    {% if error %}
+      <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    <!-- Résultat -->
+    {% if result %}
+      <div class="bg-gray-100 p-3 rounded mb-4">
+        <p><b>Décision:</b> {{ result.accepted|yesno:"ACCEPTÉ,REFUSÉ" }}</p>
+        <p><b>Confiance:</b> {{ result.confidence }}</p>
+      </div>
+    {% endif %}
+
+    <!-- Formulaire -->
+    <form method="post" class="space-y-3">
+      {% csrf_token %}
+      {{ form.as_p }}
+
+      <button type="submit" class="btn btn-pistache w-100">Envoyer</button>
+    </form>
+  </div>
+{% endblock %}

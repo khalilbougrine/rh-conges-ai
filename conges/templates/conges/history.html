@@ -1,0 +1,75 @@
+{% extends "conges/base.html" %}
+
+{% block title %}Historique des demandes{% endblock %}
+
+{% block content %}
+  <div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-md">
+
+    <!-- Titre -->
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Historique des demandes</h2>
+
+    <!-- Erreur -->
+    {% if error %}
+      <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    <!-- Recherche par matricule -->
+    <form method="post" class="mb-4">
+      {% csrf_token %}
+      <div class="input-group">
+        <input type="text" name="matricule" class="form-control" placeholder="Matricule">
+        <button type="submit" class="btn btn-pistache">Rechercher</button>
+      </div>
+    </form>
+
+    <!-- Tableau -->
+    {% if records %}
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Date dépôt</th>
+              <th>Période</th>
+              <th>Durée</th>
+              <th>Reco IA</th>
+              <th>Confiance</th>
+              <th>Statut RH</th>
+              <th>Actions RH</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in records %}
+              <tr>
+                <td>{{ r.created_at }}</td>
+                <td>{{ r.start_date }} → {{ r.end_date }}</td>
+                <td>{{ r.duration_days }}</td>
+                <td>{{ r.accepted|yesno:"ACCEPTÉ,REFUSÉ" }}</td>
+                <td>{{ r.confidence }}</td>
+                <td>{{ r.status }}</td>
+                <td>
+                  {% if r.status == "PREDICTED" %}
+                    <form method="post" action="{% url 'validate_leave' r.id %}" class="d-inline">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-success btn-sm mb-1">Valider</button>
+                    </form>
+                    <form method="post" action="{% url 'reject_leave' r.id %}" class="d-inline">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-danger btn-sm">Refuser</button>
+                    </form>
+                  {% else %}
+                    <span class="text-sm text-muted">
+                      Décidé par <b>{{ r.decided_by }}</b><br>
+                      le {{ r.decided_at|date:"d/m/Y H:i" }}
+                    </span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="text-muted">Aucune demande trouvée pour ce matricule.</p>
+    {% endif %}
+  </div>
+{% endblock %}

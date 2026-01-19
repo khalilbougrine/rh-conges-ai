@@ -1,0 +1,20 @@
+{% extends "conges/base.html" %}
+
+
+{% block title %}Connexion{% endblock %}
+
+{% block content %}
+  <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow">
+    <h2 class="text-xl font-semibold text-center mb-4">Connexion Employé</h2>
+
+    {% if form.errors %}
+      <div class="alert alert-danger">Identifiants incorrects</div>
+    {% endif %}
+
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-pistache w-100">Se connecter</button>
+    </form>
+  </div>
+{% endblock %}

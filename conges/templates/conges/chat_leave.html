@@ -1,0 +1,54 @@
+{% extends "conges/base.html" %}
+
+{% block title %}Assistant RH — Demande #{{ lr.id }}{% endblock %}
+
+{% block content %}
+  <div class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md">
+
+    <!-- Titre -->
+    <h2 class="text-2xl font-semibold text-gray-800 mb-2">💬 Assistant RH — Demande #{{ lr.id }}</h2>
+
+    <!-- Infos -->
+    <div class="text-sm text-gray-600 mb-4 space-y-1">
+      <div><b>Status :</b> {{ lr.status }}</div>
+      <div><b>Template :</b> {{ lr.template_id }}</div>
+      <div><b>Type :</b> {{ lr.leave_type }}</div>
+    </div>
+
+    <hr class="my-4" />
+
+    <!-- Formulaire de question -->
+    <form method="post" class="space-y-3">
+      {% csrf_token %}
+      <label for="question" class="font-medium text-gray-700">Pose ta question :</label>
+      <textarea id="question" name="question" placeholder="Ex : Pourquoi ma demande a été refusée ?" class="form-control" rows="4"></textarea>
+      <button type="submit" class="btn btn-pistache">Envoyer</button>
+    </form>
+
+    <!-- Réponse IA -->
+    {% if answer %}
+      <div class="mt-6">
+        <h3 class="text-lg font-semibold mb-2">🤖 Réponse</h3>
+        <div class="bg-gray-100 p-4 rounded-md whitespace-pre-wrap">{{ answer }}</div>
+
+        {% if sources %}
+          <div class="text-sm text-muted mt-3">
+            <b>Sources :</b>
+            <ul class="list-disc pl-5">
+              {% for s in sources %}
+                <li>{{ s.source_file }} — {{ s.section }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <!-- Retour + Logout -->
+    <div class="mt-6 flex items-center gap-4">
+      <a href="{% url 'home_redirect' %}" class="text-sm text-pistache hover:underline">← Retour</a>
+
+    </div>
+
+  </div>
+{% endblock %}

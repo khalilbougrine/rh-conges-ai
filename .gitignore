@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+venv/
+.env.*
+
+# Django
+db.sqlite3
+media/
+staticfiles/
+
+# ML / models
+*.pkl
+*.joblib
+*.h5
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
