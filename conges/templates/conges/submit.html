@@ -1,37 +1,31 @@
 {% extends "conges/base.html" %}
+{% load widget_tweaks %}
 
 {% block title %}Demande de congé{% endblock %}
 
 {% block content %}
-  <div class="max-w-xl mx-auto bg-white p-6 rounded-lg shadow-md">
+  <h2 class="text-2xl font-semibold mb-6">Demande de congé</h2>
 
-    <!-- Bouton retour -->
-    <div class="mb-4">
-      <a href="{% url 'my_history' %}" class="text-sm text-pistache hover:underline">← Retour à l'historique</a>
+  {% if error %}
+    <div class="bg-red-600 text-white text-sm p-2 rounded mb-4">{{ error }}</div>
+  {% endif %}
+
+  {% if result %}
+    <div class="bg-white bg-opacity-10 p-4 rounded mb-4">
+      <p><strong>Décision :</strong> {{ result.accepted|yesno:"ACCEPTÉ,REFUSÉ" }}</p>
+      <p><strong>Confiance :</strong> {{ result.confidence }}</p>
     </div>
+  {% endif %}
 
-    <!-- Titre -->
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Demande de congé</h2>
-
-    <!-- Erreur -->
-    {% if error %}
-      <div class="alert alert-danger">{{ error }}</div>
-    {% endif %}
-
-    <!-- Résultat -->
-    {% if result %}
-      <div class="bg-gray-100 p-3 rounded mb-4">
-        <p><b>Décision:</b> {{ result.accepted|yesno:"ACCEPTÉ,REFUSÉ" }}</p>
-        <p><b>Confiance:</b> {{ result.confidence }}</p>
+  <form method="post" class="space-y-4">
+    {% csrf_token %}
+    {% for field in form %}
+      <div>
+        <label class="text-sm">{{ field.label }}</label>
+        {% render_field field class="form-input w-full rounded px-4 py-2 bg-white bg-opacity-10 text-white border border-white border-opacity-20" %}
       </div>
-    {% endif %}
+    {% endfor %}
 
-    <!-- Formulaire -->
-    <form method="post" class="space-y-3">
-      {% csrf_token %}
-      {{ form.as_p }}
-
-      <button type="submit" class="btn btn-pistache w-100">Envoyer</button>
-    </form>
-  </div>
+    <button type="submit" class="btn-pistache w-full py-2 rounded font-semibold">Envoyer</button>
+  </form>
 {% endblock %}

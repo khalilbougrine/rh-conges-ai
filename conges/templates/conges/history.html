@@ -1,75 +1,72 @@
 {% extends "conges/base.html" %}
+{% load widget_tweaks %}
 
 {% block title %}Historique des demandes{% endblock %}
 
 {% block content %}
-  <div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-md">
+  <h2 class="text-2xl font-semibold text-white mb-6">Historique des demandes</h2>
 
-    <!-- Titre -->
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Historique des demandes</h2>
+  {% if error %}
+    <div class="bg-red-600 text-white text-sm p-3 rounded mb-4">{{ error }}</div>
+  {% endif %}
 
-    <!-- Erreur -->
-    {% if error %}
-      <div class="alert alert-danger">{{ error }}</div>
-    {% endif %}
+  <!-- Recherche -->
+  <form method="post" class="mb-6">
+    {% csrf_token %}
+    <div class="flex gap-4">
+      <input type="text" name="matricule" placeholder="Matricule"
+        class="flex-1 p-2 rounded bg-white bg-opacity-10 text-white border border-white border-opacity-20"
+      />
+      <button type="submit" class="btn-pistache px-4 py-2 rounded font-semibold">Rechercher</button>
+    </div>
+  </form>
 
-    <!-- Recherche par matricule -->
-    <form method="post" class="mb-4">
-      {% csrf_token %}
-      <div class="input-group">
-        <input type="text" name="matricule" class="form-control" placeholder="Matricule">
-        <button type="submit" class="btn btn-pistache">Rechercher</button>
-      </div>
-    </form>
-
-    <!-- Tableau -->
-    {% if records %}
-      <div class="table-responsive">
-        <table class="table table-bordered table-striped align-middle">
-          <thead class="table-light">
-            <tr>
-              <th>Date dépôt</th>
-              <th>Période</th>
-              <th>Durée</th>
-              <th>Reco IA</th>
-              <th>Confiance</th>
-              <th>Statut RH</th>
-              <th>Actions RH</th>
+  {% if records %}
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm text-white border border-white border-opacity-20 bg-white bg-opacity-5 rounded">
+        <thead class="bg-white bg-opacity-10">
+          <tr>
+            <th class="px-4 py-2 text-left">Date dépôt</th>
+            <th class="px-4 py-2 text-left">Période</th>
+            <th class="px-4 py-2 text-left">Durée</th>
+            <th class="px-4 py-2 text-left">Reco IA</th>
+            <th class="px-4 py-2 text-left">Confiance</th>
+            <th class="px-4 py-2 text-left">Statut RH</th>
+            <th class="px-4 py-2 text-left">Actions RH</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in records %}
+            <tr class="hover:bg-white hover:bg-opacity-10 transition">
+              <td class="px-4 py-2">{{ r.created_at }}</td>
+              <td class="px-4 py-2">{{ r.start_date }} → {{ r.end_date }}</td>
+              <td class="px-4 py-2">{{ r.duration_days }}</td>
+              <td class="px-4 py-2">{{ r.accepted|yesno:"ACCEPTÉ,REFUSÉ" }}</td>
+              <td class="px-4 py-2">{{ r.confidence }}</td>
+              <td class="px-4 py-2">{{ r.status }}</td>
+              <td class="px-4 py-2 space-y-1">
+                {% if r.status == "PREDICTED" %}
+                  <form method="post" action="{% url 'validate_leave' r.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white text-xs py-1 rounded">Valider</button>
+                  </form>
+                  <form method="post" action="{% url 'reject_leave' r.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white text-xs py-1 rounded">Refuser</button>
+                  </form>
+                {% else %}
+                  <div class="text-xs text-white text-opacity-70">
+                    Décidé par <b>{{ r.decided_by }}</b><br>
+                    le {{ r.decided_at|date:"d/m/Y H:i" }}
+                  </div>
+                {% endif %}
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {% for r in records %}
-              <tr>
-                <td>{{ r.created_at }}</td>
-                <td>{{ r.start_date }} → {{ r.end_date }}</td>
-                <td>{{ r.duration_days }}</td>
-                <td>{{ r.accepted|yesno:"ACCEPTÉ,REFUSÉ" }}</td>
-                <td>{{ r.confidence }}</td>
-                <td>{{ r.status }}</td>
-                <td>
-                  {% if r.status == "PREDICTED" %}
-                    <form method="post" action="{% url 'validate_leave' r.id %}" class="d-inline">
-                      {% csrf_token %}
-                      <button type="submit" class="btn btn-success btn-sm mb-1">Valider</button>
-                    </form>
-                    <form method="post" action="{% url 'reject_leave' r.id %}" class="d-inline">
-                      {% csrf_token %}
-                      <button type="submit" class="btn btn-danger btn-sm">Refuser</button>
-                    </form>
-                  {% else %}
-                    <span class="text-sm text-muted">
-                      Décidé par <b>{{ r.decided_by }}</b><br>
-                      le {{ r.decided_at|date:"d/m/Y H:i" }}
-                    </span>
-                  {% endif %}
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% else %}
-      <p class="text-muted">Aucune demande trouvée pour ce matricule.</p>
-    {% endif %}
-  </div>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="text-white text-opacity-70 mt-4">Aucune demande trouvée pour ce matricule.</p>
+  {% endif %}
 {% endblock %}

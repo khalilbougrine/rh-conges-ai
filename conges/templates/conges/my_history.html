@@ -3,57 +3,46 @@
 {% block title %}Mon historique{% endblock %}
 
 {% block content %}
-  <div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-md">
+  <h2 class="text-2xl font-semibold text-white mb-6">Mon historique</h2>
 
-    <!-- Haut de page -->
-    <div class="flex justify-between items-center mb-4">
-      <a href="{% url 'submit_leave' %}" class="btn btn-success">➕ Nouvelle demande</a>
-    </div>
+  {% if error %}
+    <div class="bg-red-600 text-white text-sm p-3 rounded mb-4">{{ error }}</div>
+  {% endif %}
 
-    <!-- Titre -->
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Mon historique</h2>
-
-    <!-- Erreur -->
-    {% if error %}
-      <div class="alert alert-danger">{{ error }}</div>
-    {% endif %}
-
-    <!-- Tableau -->
-    {% if records %}
-      <div class="table-responsive">
-        <table class="table table-bordered table-striped">
-          <thead class="table-light">
-            <tr>
-              <th>Date dépôt</th>
-              <th>Période</th>
-              <th>Durée</th>
-              <th>Décision</th>
-              <th>Confiance</th>
-              <th>Chat</th>
+  {% if records %}
+    <div class="overflow-x-auto">
+      <table class="min-w-full border border-white border-opacity-20 text-sm text-white backdrop-blur-sm bg-white bg-opacity-5 rounded-md overflow-hidden">
+        <thead class="bg-white bg-opacity-10">
+          <tr>
+            <th class="px-4 py-2 text-left">Date dépôt</th>
+            <th class="px-4 py-2 text-left">Période</th>
+            <th class="px-4 py-2 text-left">Durée</th>
+            <th class="px-4 py-2 text-left">Décision</th>
+            <th class="px-4 py-2 text-left">Confiance</th>
+            <th class="px-4 py-2 text-left">Chat</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in records %}
+            <tr class="hover:bg-white hover:bg-opacity-10 transition">
+              <td class="px-4 py-2">{{ r.created_at }}</td>
+              <td class="px-4 py-2">{{ r.start_date }} → {{ r.end_date }}</td>
+              <td class="px-4 py-2">{{ r.duration_days }}</td>
+              <td class="px-4 py-2">{{ r.accepted|yesno:"ACCEPTÉ,REFUSÉ" }}</td>
+              <td class="px-4 py-2">{{ r.confidence }}</td>
+              <td class="px-4 py-2">
+                {% if not r.accepted %}
+                  <a href="{% url 'chat_leave' r.id %}" class="text-pistache hover:underline text-sm">💬</a>
+                {% else %}
+                  <span class="opacity-50">—</span>
+                {% endif %}
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {% for r in records %}
-              <tr>
-                <td>{{ r.created_at }}</td>
-                <td>{{ r.start_date }} → {{ r.end_date }}</td>
-                <td>{{ r.duration_days }}</td>
-                <td>{{ r.accepted|yesno:"ACCEPTÉ,REFUSÉ" }}</td>
-                <td>{{ r.confidence }}</td>
-                <td>
-                  {% if not r.accepted %}
-                    <a href="{% url 'chat_leave' r.id %}" class="btn btn-outline-secondary btn-sm">💬</a>
-                  {% else %}
-                    —
-                  {% endif %}
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% else %}
-      <p class="text-muted">Aucune demande trouvée pour le moment.</p>
-    {% endif %}
-  </div>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="text-white text-opacity-70 mt-4">Aucune demande trouvée pour le moment.</p>
+  {% endif %}
 {% endblock %}

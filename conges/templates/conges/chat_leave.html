@@ -1,40 +1,46 @@
 {% extends "conges/base.html" %}
+{% load widget_tweaks %}
 
 {% block title %}Assistant RH — Demande #{{ lr.id }}{% endblock %}
 
 {% block content %}
-  <div class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md">
+  <div class="max-w-3xl mx-auto">
 
     <!-- Titre -->
-    <h2 class="text-2xl font-semibold text-gray-800 mb-2">💬 Assistant RH — Demande #{{ lr.id }}</h2>
+    <h2 class="text-2xl font-semibold mb-4">💬 Assistant RH — Demande #{{ lr.id }}</h2>
 
-    <!-- Infos -->
-    <div class="text-sm text-gray-600 mb-4 space-y-1">
-      <div><b>Status :</b> {{ lr.status }}</div>
-      <div><b>Template :</b> {{ lr.template_id }}</div>
-      <div><b>Type :</b> {{ lr.leave_type }}</div>
+    <!-- Infos demande -->
+    <div class="text-sm text-white text-opacity-80 mb-4 space-y-1">
+      <div><strong>Status :</strong> {{ lr.status }}</div>
+      <div><strong>Template :</strong> {{ lr.template_id }}</div>
+      <div><strong>Type :</strong> {{ lr.leave_type }}</div>
     </div>
 
-    <hr class="my-4" />
+    <hr class="border-white border-opacity-20 my-4" />
 
-    <!-- Formulaire de question -->
-    <form method="post" class="space-y-3">
+    <!-- Formulaire question -->
+    <form method="post" class="space-y-4">
       {% csrf_token %}
-      <label for="question" class="font-medium text-gray-700">Pose ta question :</label>
-      <textarea id="question" name="question" placeholder="Ex : Pourquoi ma demande a été refusée ?" class="form-control" rows="4"></textarea>
-      <button type="submit" class="btn btn-pistache">Envoyer</button>
+      <label for="question" class="block font-medium text-white">Pose ta question :</label>
+      <textarea id="question" name="question" rows="4" placeholder="Ex : Pourquoi ma demande a été refusée ?"
+        class="w-full p-3 rounded bg-white bg-opacity-10 text-white border border-white border-opacity-20"></textarea>
+      <button type="submit" class="btn-pistache w-full py-2 rounded font-semibold">Envoyer</button>
     </form>
 
     <!-- Réponse IA -->
     {% if answer %}
-      <div class="mt-6">
-        <h3 class="text-lg font-semibold mb-2">🤖 Réponse</h3>
-        <div class="bg-gray-100 p-4 rounded-md whitespace-pre-wrap">{{ answer }}</div>
+      <div class="mt-8">
+        <h3 class="text-lg font-semibold mb-2">🤖 Réponse de l’assistant</h3>
+
+        <div class="flex items-start gap-3 bg-white bg-opacity-10 p-4 rounded-lg">
+          <img src="/static/icons/robot.svg" alt="Bot" class="w-6 h-6 mt-1" />
+          <div class="whitespace-pre-wrap text-white text-sm">{{ answer }}</div>
+        </div>
 
         {% if sources %}
-          <div class="text-sm text-muted mt-3">
-            <b>Sources :</b>
-            <ul class="list-disc pl-5">
+          <div class="mt-4 text-xs text-white text-opacity-60">
+            <strong>Sources :</strong>
+            <ul class="list-disc pl-5 mt-1">
               {% for s in sources %}
                 <li>{{ s.source_file }} — {{ s.section }}</li>
               {% endfor %}
@@ -43,12 +49,6 @@
         {% endif %}
       </div>
     {% endif %}
-
-    <!-- Retour + Logout -->
-    <div class="mt-6 flex items-center gap-4">
-      <a href="{% url 'home_redirect' %}" class="text-sm text-pistache hover:underline">← Retour</a>
-
-    </div>
 
   </div>
 {% endblock %}

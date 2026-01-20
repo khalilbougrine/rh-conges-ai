@@ -1,20 +1,72 @@
-{% extends "conges/base.html" %}
+{% load widget_tweaks %}
 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Connexion</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-{% block title %}Connexion{% endblock %}
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-{% block content %}
-  <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow">
-    <h2 class="text-xl font-semibold text-center mb-4">Connexion Employé</h2>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      background-size: 400% 400%;
+      animation: gradient 15s ease infinite;
+      min-height: 100vh;
+    }
+
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+
+<body class="flex items-center justify-center">
+
+  <div class="glass p-8 max-w-md w-full mt-20 text-white">
+    <h2 class="text-2xl font-bold text-center mb-6 tracking-wide">Connexion</h2>
 
     {% if form.errors %}
-      <div class="alert alert-danger">Identifiants incorrects</div>
+      <div class="bg-red-500 text-white text-sm p-2 rounded mb-4">
+        Identifiants incorrects
+      </div>
     {% endif %}
 
     <form method="post" class="space-y-4">
       {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit" class="btn btn-pistache w-100">Se connecter</button>
+      <div>
+        <label class="text-sm">Nom d'utilisateur</label>
+        {{ form.username|add_class:"form-input w-full rounded px-4 py-2 bg-white bg-opacity-10 text-white border border-white border-opacity-20" }}
+      </div>
+
+      <div>
+        <label class="text-sm">Mot de passe</label>
+        {{ form.password|add_class:"form-input w-full rounded px-4 py-2 bg-white bg-opacity-10 text-white border border-white border-opacity-20" }}
+      </div>
+
+      <button type="submit" class="w-full bg-pistache hover:bg-green-400 transition py-2 rounded font-semibold">
+        Se connecter
+      </button>
     </form>
+
+    <p class="text-center text-sm mt-6 opacity-80">
+      Mot de passe oublié ? <a href="#" class="underline">Réinitialiser</a>
+    </p>
   </div>
-{% endblock %}
+
+</body>
+</html>
